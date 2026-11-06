@@ -1,0 +1,35 @@
+/* ==========================================================================
+   RecurSoft - Ajustes visuales del panel Administrador
+   ========================================================================== */
+
+body.role-admin .page-heading h1::after {
+    content: "";
+    display: block;
+    width: 48px;
+    height: 4px;
+    border-radius: 99px;
+    background: var(--color3);
+    margin-top: 0.45rem;
+}
+
+body.role-admin .quick-access i {
+    color: var(--color1);
+}
+
+.admin-hero {
+    background: linear-gradient(120deg, var(--color1), var(--color3));
+    color: var(--blanco);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.2rem;
+}
+
+.admin-hero h2 {
+    font-size: clamp(1.15rem, 2vw, 1.45rem);
+    font-weight: 800;
+    margin: 0;
+}
+
+.admin-hero p {
+    margin: 0.35rem 0 0;
+    opacity: 0.9;
+}
