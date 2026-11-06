@@ -77,8 +77,7 @@ if ($q !== '') {
     array_push($params, "%{$q}%", "%{$q}%", "%{$q}%");
 }
 if ($filtroEstado !== '') {
-    $sql .= ' AND estado = ?';
-    $params[] = $filtroEstado;
+    $sql .= ' AND ' . rs_sql_estado('estado', $filtroEstado);
 }
 $sql .= ' ORDER BY nombre_empresa';
 $proveedores = rs_all($sql, $params);

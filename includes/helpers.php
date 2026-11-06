@@ -114,6 +114,14 @@ function rs_estado_texto($estado): string
     return rs_es_activo($estado) ? 'Activo' : 'Inactivo';
 }
 
+/** Condición SQL tolerante a estados guardados como 'Activo'/'Inactivo' o '1'/'0'. */
+function rs_sql_estado(string $columna, string $estado): string
+{
+    return rs_es_activo($estado)
+        ? "($columna IN ('Activo', '1'))"
+        : "($columna IS NULL OR $columna NOT IN ('Activo', '1'))";
+}
+
 function rs_estado_opuesto($estado): string
 {
     return rs_es_activo($estado) ? 'Inactivo' : 'Activo';

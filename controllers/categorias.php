@@ -13,7 +13,7 @@ if (rs_post_valido('admin')) {
 
     if ($accion === 'guardar') {
         $old = $_POST;
-        $nombre = rs_max($errores, rs_req($errores, rs_post('nombre_categoria'), 'nombre_categoria', 'nombre'), 'nombre_categoria', 50, 'El nombre');
+        $nombre = rs_max($errores, rs_req($errores, rs_post('nombre_categoria'), 'nombre_categoria', 'nombre'), 'nombre_categoria', 100, 'El nombre');
         $descripcion = rs_max($errores, rs_trim(rs_post('descripcion')), 'descripcion', 150, 'La descripción');
         $estado = rs_opcion($errores, rs_post('estado'), ['Activo', 'Inactivo'], 'estado', 'estado');
         if ($id > 0 && !rs_registro('categoria_recurso', $id)) {
@@ -72,8 +72,7 @@ if ($q !== '') {
     array_push($params, "%{$q}%", "%{$q}%");
 }
 if ($filtroEstado !== '') {
-    $sql .= ' AND c.estado = ?';
-    $params[] = $filtroEstado;
+    $sql .= ' AND ' . rs_sql_estado('c.estado', $filtroEstado);
 }
 $sql .= ' ORDER BY c.nombre_categoria';
 $categorias = rs_all($sql, $params);

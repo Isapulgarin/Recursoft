@@ -22,7 +22,7 @@ if ($soloDisp) {
     $sql .= " AND r.disponibilidad = 'Disponible'";
 }
 $catalogo = rs_all($sql . ' ORDER BY r.nombre_recurso', $params);
-$categoriasLista = rs_all("SELECT id_categoria, nombre_categoria FROM categoria_recurso WHERE estado = 'Activo' ORDER BY nombre_categoria");
+$categoriasLista = rs_all("SELECT id_categoria, nombre_categoria FROM categoria_recurso WHERE estado IN ('Activo', '1') ORDER BY nombre_categoria");
 
 $pageTitle = 'Recursos';
 $dashboardType = 'EM';

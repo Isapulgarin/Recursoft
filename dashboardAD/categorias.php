@@ -101,7 +101,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                     <p class="small text-secondary">Los campos marcados con <span class="req">*</span> son obligatorios.</p>
                     <div class="mb-3">
                         <label class="form-label" for="nombreCat">Nombre de la categoría<span class="req">*</span></label>
-                        <input class="form-control<?php echo rs_invalid($errores, 'nombre_categoria'); ?>" id="nombreCat" name="nombre_categoria" type="text" maxlength="50" required data-label="Nombre" value="<?php echo rs_h(rs_old($old, 'nombre_categoria')); ?>">
+                        <input class="form-control<?php echo rs_invalid($errores, 'nombre_categoria'); ?>" id="nombreCat" name="nombre_categoria" type="text" maxlength="100" required data-label="Nombre" value="<?php echo rs_h(rs_old($old, 'nombre_categoria')); ?>">
                         <?php echo rs_error_campo($errores, 'nombre_categoria'); ?>
                     </div>
                     <div class="mb-3">

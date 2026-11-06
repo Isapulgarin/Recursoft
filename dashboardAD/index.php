@@ -9,7 +9,7 @@ $stats = rs_one(
             (SELECT COUNT(*) FROM prestamo WHERE estado IN ('Pendiente','Activo','Vencido')) AS prestamos,
             (SELECT COUNT(*) FROM prestamo WHERE estado = 'Vencido') AS vencidos,
             (SELECT COUNT(*) FROM usuario) AS usuarios,
-            (SELECT COUNT(*) FROM usuario WHERE estado = 'Activo') AS usuarios_activos"
+            (SELECT COUNT(*) FROM usuario WHERE estado IN ('Activo', '1')) AS usuarios_activos"
 );
 $porDisponibilidad = rs_all('SELECT disponibilidad, COUNT(*) AS total FROM recurso GROUP BY disponibilidad ORDER BY total DESC');
 $porEstadoPrestamo = rs_all('SELECT estado, COUNT(*) AS total FROM prestamo GROUP BY estado ORDER BY total DESC');

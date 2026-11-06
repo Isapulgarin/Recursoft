@@ -84,8 +84,7 @@ if ($q !== '') {
     array_push($params, "%{$q}%", "%{$q}%", "%{$q}%", "%{$q}%");
 }
 if ($filtroEstado !== '') {
-    $sql .= ' AND e.estado = ?';
-    $params[] = $filtroEstado;
+    $sql .= ' AND ' . rs_sql_estado('e.estado', $filtroEstado);
 }
 $sql .= ' ORDER BY e.apellido, e.nombre';
 $empleados = rs_all($sql, $params);

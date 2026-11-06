@@ -132,7 +132,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label" for="codigoRecurso">Código interno<span class="req">*</span></label>
-                            <input class="form-control<?php echo rs_invalid($errores, 'codigo_interno'); ?>" id="codigoRecurso" name="codigo_interno" type="text" maxlength="30" required value="<?php echo rs_h(rs_old($old, 'codigo_interno')); ?>">
+                            <input class="form-control<?php echo rs_invalid($errores, 'codigo_interno'); ?>" id="codigoRecurso" name="codigo_interno" type="text" maxlength="50" required value="<?php echo rs_h(rs_old($old, 'codigo_interno')); ?>">
                             <?php echo rs_error_campo($errores, 'codigo_interno'); ?>
                         </div>
                         <div class="col-12">
@@ -147,7 +147,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                         </div>
                         <div class="col-12 col-md-4">
                             <label class="form-label" for="serialRecurso">Serial</label>
-                            <input class="form-control<?php echo rs_invalid($errores, 'serial'); ?>" id="serialRecurso" name="serial" type="text" maxlength="50" value="<?php echo rs_h(rs_old($old, 'serial')); ?>">
+                            <input class="form-control<?php echo rs_invalid($errores, 'serial'); ?>" id="serialRecurso" name="serial" type="text" maxlength="100" value="<?php echo rs_h(rs_old($old, 'serial')); ?>">
                             <?php echo rs_error_campo($errores, 'serial'); ?>
                         </div>
                         <div class="col-12 col-md-4">

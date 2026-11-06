@@ -18,10 +18,10 @@ if (rs_post_valido('admin')) {
             $errores['general'] = 'El recurso que intenta editar no existe.';
         }
         $idCategoria = rs_entero_id($errores, rs_post('id_categoria'), 'id_categoria', 'una categoría');
-        $codigo = rs_max($errores, rs_req($errores, rs_post('codigo_interno'), 'codigo_interno', 'código interno'), 'codigo_interno', 30, 'El código interno');
+        $codigo = rs_max($errores, rs_req($errores, rs_post('codigo_interno'), 'codigo_interno', 'código interno'), 'codigo_interno', 50, 'El código interno');
         $nombre = rs_max($errores, rs_req($errores, rs_post('nombre_recurso'), 'nombre_recurso', 'nombre'), 'nombre_recurso', 100, 'El nombre');
         $descripcion = rs_max($errores, rs_trim(rs_post('descripcion')), 'descripcion', 150, 'La descripción');
-        $serial = rs_max($errores, rs_trim(rs_post('serial')), 'serial', 50, 'El serial');
+        $serial = rs_max($errores, rs_trim(rs_post('serial')), 'serial', 100, 'El serial');
         $marca = rs_max($errores, rs_trim(rs_post('marca')), 'marca', 50, 'La marca');
         $modelo = rs_max($errores, rs_trim(rs_post('modelo')), 'modelo', 50, 'El modelo');
         $estado = rs_opcion($errores, rs_post('estado'), RS_ESTADOS_RECURSO, 'estado', 'estado');
