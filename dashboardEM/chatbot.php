@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+rs_requiere_empleado();
+
 $pageTitle = 'Chatbot y Asistencia';
 $dashboardType = 'EM';
 $activePage = 'chatbot';

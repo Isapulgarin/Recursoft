@@ -6,6 +6,7 @@
 require_once __DIR__ . '/../config/conexion.php';
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/validacion.php';
+require_once __DIR__ . '/procesos.php';
 
 function rs_usuario_sesion(): ?array
 {
