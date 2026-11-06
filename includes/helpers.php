@@ -114,6 +114,14 @@ function rs_estado_texto($estado): string
     return rs_es_activo($estado) ? 'Activo' : 'Inactivo';
 }
 
+/** Condición SQL tolerante a estados guardados como 'Activo'/'Inactivo' o '1'/'0'. */
+function rs_sql_estado(string $columna, string $estado): string
+{
+    return rs_es_activo($estado)
+        ? "($columna IN ('Activo', '1'))"
+        : "($columna IS NULL OR $columna NOT IN ('Activo', '1'))";
+}
+
 function rs_estado_opuesto($estado): string
 {
     return rs_es_activo($estado) ? 'Inactivo' : 'Activo';
@@ -316,7 +324,7 @@ function rs_marcar_prestamos_vencidos(): void
     );
 }
 
-function rs_opciones_html(array $filas, string $idCol, string $texto, $seleccionado = '', string $placeholder = 'Seleccione'): string
+function rs_opciones_html(array $filas, string $idCol, string|Closure $texto, $seleccionado = '', string $placeholder = 'Seleccione'): string
 {
     $html = '<option value="">' . rs_h($placeholder) . '</option>';
     foreach ($filas as $fila) {
@@ -325,4 +333,118 @@ function rs_opciones_html(array $filas, string $idCol, string $texto, $seleccion
         $html .= '<option value="' . rs_h($id) . '"' . $sel . '>' . rs_h($texto instanceof Closure ? $texto($fila) : ($fila[$texto] ?? '')) . '</option>';
     }
     return $html;
+}
+
+function rs_json_attr(array $data): string
+{
+    return rs_h(json_encode($data, JSON_UNESCAPED_UNICODE));
+}
+
+function rs_opciones_lista(array $lista, $seleccionado = '', ?string $placeholder = 'Seleccione'): string
+{
+    $html = $placeholder !== null ? '<option value="">' . rs_h($placeholder) . '</option>' : '';
+    foreach ($lista as $valor) {
+        $sel = ((string) $valor === (string) $seleccionado) ? ' selected' : '';
+        $html .= '<option value="' . rs_h($valor) . '"' . $sel . '>' . rs_h($valor) . '</option>';
+    }
+    return $html;
+}
+
+function rs_fecha_txt($fecha): string
+{
+    if (!$fecha || strpos((string) $fecha, '0000') === 0) {
+        return '—';
+    }
+    $ts = strtotime((string) $fecha);
+    return $ts ? date('d/m/Y', $ts) : '—';
+}
+
+function rs_dinero($valor): string
+{
+    return '$ ' . number_format((float) $valor, 2, ',', '.');
+}
+
+function rs_marcador_modal(bool $abrir, string $modalId): string
+{
+    return $abrir ? '<span hidden data-open-modal="#' . rs_h($modalId) . '"></span>' : '';
+}
+
+function rs_error_general(array $errores): string
+{
+    if (empty($errores)) {
+        return '';
+    }
+    $msg = $errores['general'] ?? 'Revise los campos marcados en el formulario.';
+    return '<div class="alert alert-rs alert-rs-error" data-form-error>' . rs_h($msg) . '</div>';
+}
+
+/**
+ * Estados de recurso que impiden su préstamo hasta que se determine su condición.
+ */
+function rs_estados_recurso_no_aptos(): array
+{
+    return ['Dañado', 'Fuera de servicio', 'Inactivo'];
+}
+
+/**
+ * Recalcula la disponibilidad de un recurso a partir de su estado,
+ * los préstamos vigentes y los mantenimientos activos.
+ */
+function rs_recalcular_disponibilidad($idRecurso): string
+{
+    $recurso = rs_registro('recurso', $idRecurso);
+    if (!$recurso) {
+        return '';
+    }
+
+    $prestamo = rs_one(
+        "SELECT 1 FROM prestamo WHERE id_recurso = ? AND estado IN ('Pendiente','Activo','Vencido') LIMIT 1",
+        [(int) $idRecurso]
+    );
+    $mant = rs_one(
+        "SELECT 1 FROM mantenimiento WHERE id_recurso = ? AND estado IN ('Programado','En proceso','Reportado') LIMIT 1",
+        [(int) $idRecurso]
+    );
+
+    if ($prestamo) {
+        $disp = 'Prestado';
+    } elseif ($mant) {
+        $disp = 'En mantenimiento';
+    } elseif (in_array((string) $recurso['estado'], rs_estados_recurso_no_aptos(), true)
+        || (string) $recurso['disponibilidad'] === 'No disponible') {
+        $disp = 'No disponible';
+    } else {
+        $disp = 'Disponible';
+    }
+
+    if ($disp !== (string) $recurso['disponibilidad']) {
+        rs_actualizar_disponibilidad($idRecurso, $disp);
+    }
+    return $disp;
+}
+
+/**
+ * Botón de acción que envía un formulario POST con token CSRF (activar, inactivar, eliminar...).
+ */
+function rs_btn_post(string $accion, string $campoId, $id, string $icono, string $titulo, string $confirmar = '', string $clase = ''): string
+{
+    $html = '<form method="post"' . ($confirmar !== '' ? ' data-confirm="' . rs_h($confirmar) . '"' : '') . '>';
+    $html .= rs_csrf_field();
+    $html .= '<input type="hidden" name="accion" value="' . rs_h($accion) . '">';
+    $html .= '<input type="hidden" name="' . rs_h($campoId) . '" value="' . (int) $id . '">';
+    $html .= '<button class="btn btn-sm btn-rs-outline ' . rs_h($clase) . '" type="submit" title="' . rs_h($titulo) . '" aria-label="' . rs_h($titulo) . '">';
+    $html .= '<i class="bi ' . rs_h($icono) . '"></i></button></form>';
+    return $html;
+}
+
+function rs_btn_estado(string $campoId, $id, $estado, string $entidad): string
+{
+    $activo = rs_es_activo($estado);
+    $verbo = $activo ? 'Inactivar' : 'Activar';
+    return rs_btn_post('estado', $campoId, $id, $activo ? 'bi-toggle-on' : 'bi-toggle-off', $verbo, '¿Desea ' . mb_strtolower($verbo) . ' ' . $entidad . '?');
+}
+
+function rs_btn_eliminar(string $campoId, $id, string $entidad): string
+{
+    return rs_btn_post('eliminar', $campoId, $id, 'bi-trash', 'Eliminar', '¿Eliminar ' . $entidad . '? Esta acción no se puede deshacer.', 'text-danger');
 }

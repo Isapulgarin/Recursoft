@@ -49,7 +49,7 @@ $activePage = $activePage ?? '';
         </nav>
 
         <div class="sidebar-footer">
-            <a class="nav-link logout" href="../Index.php">
+            <a class="nav-link logout" href="<?php echo rs_h(RS_BASE); ?>controllers/auth.php?accion=logout">
                 <i class="bi bi-box-arrow-left"></i><span class="sidebar-text">Cerrar sesión</span>
             </a>
         </div>

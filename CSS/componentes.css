@@ -78,3 +78,54 @@
 .offcanvas-backdrop {
     z-index: 1040;
 }
+
+/* --------------------------------------------------------------------------
+   Formularios: obligatorios, errores y alertas
+   -------------------------------------------------------------------------- */
+.req {
+    color: #d36565;
+    font-weight: 700;
+    margin-left: 2px;
+}
+
+.campo-error {
+    color: #b42318;
+    font-size: 0.78rem;
+    margin-top: 0.3rem;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: #d36565;
+}
+
+.alert-rs {
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.alert-rs-ok {
+    background: #e6f6ec;
+    border-color: #b7e4c7;
+    color: #1f7a45;
+}
+
+.alert-rs-error {
+    background: #fdecec;
+    border-color: #f5c2c2;
+    color: #a12b2b;
+}
+
+.table-actions {
+    white-space: nowrap;
+}
+
+.table-actions form {
+    display: inline;
+}
+
+.detalle-compra-table td {
+    min-width: 110px;
+}

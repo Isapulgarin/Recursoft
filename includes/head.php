@@ -5,6 +5,10 @@
 require_once __DIR__ . '/../config/conexion.php';
 require_once __DIR__ . '/helpers.php';
 
+if (function_exists('rs_aplicar_navbar_usuario')) {
+    rs_aplicar_navbar_usuario();
+}
+
 $pageTitle = $pageTitle ?? 'RecurSoft';
 $dashboardType = $dashboardType ?? 'login';
 $bodyClass = $bodyClass ?? '';

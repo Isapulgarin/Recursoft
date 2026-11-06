@@ -20,9 +20,15 @@ if (rs_post_valido('admin')) {
         $telefono = rs_telefono_ok($errores, rs_max($errores, rs_req($errores, rs_post('telefono'), 'telefono', 'teléfono'), 'telefono', 20, 'Teléfono'), 'telefono');
         $idRol = rs_entero_id($errores, rs_post('id_rol'), 'id_rol', 'un rol');
         $estado = rs_opcion($errores, rs_post('estado'), ['Activo', 'Inactivo'], 'estado', 'estado');
+        if ($id > 0 && !rs_registro('usuario', $id)) {
+            $errores['general'] = 'El usuario que intenta editar no existe.';
+        }
+        if ($id > 0 && $id === (int) (rs_usuario_sesion()['id_usuario'] ?? 0) && $estado === 'Inactivo') {
+            $errores['estado'] = 'No puede inactivar su propia cuenta.';
+        }
         $password = rs_password_ok($errores, rs_post('contrasena'), 'contrasena', $id === 0);
         rs_fk($errores, 'rol', $idRol, 'id_rol', 'rol');
-        rs_unico($errores, 'usuario', 'correo', $correo, 'correo', 'El correo ya está registrado.', $id ?: null, 'id_usuario');
+        rs_unico($errores, 'usuario', 'correo', $correo, 'correo', 'Este correo ya se encuentra registrado.', $id ?: null, 'id_usuario');
 
         if (!$errores) {
             try {
@@ -54,9 +60,13 @@ if (rs_post_valido('admin')) {
         $abrirModal = true;
     }
 
+    $propio = $id > 0 && $id === (int) (rs_usuario_sesion()['id_usuario'] ?? 0);
+
     if ($accion === 'estado' && $id > 0) {
         $row = rs_registro('usuario', $id);
-        if ($row) {
+        if ($propio) {
+            rs_flash('error', 'No puede inactivar su propia cuenta.');
+        } elseif ($row) {
             rs_exec('UPDATE usuario SET estado = ? WHERE id_usuario = ?', [rs_estado_opuesto($row['estado']), $id]);
             rs_flash('ok', 'El estado del usuario se actualizó.');
         }
@@ -65,8 +75,11 @@ if (rs_post_valido('admin')) {
 
     if ($accion === 'eliminar' && $id > 0) {
         $vinculo = rs_one('SELECT id_empleado FROM empleado WHERE id_usuario = ? LIMIT 1', [$id]);
-        if ($vinculo) {
-            rs_flash('error', 'No se puede eliminar: el usuario está asociado a un empleado.');
+        $reportes = rs_one('SELECT id_reporte FROM reporte WHERE id_usuario = ? LIMIT 1', [$id]);
+        if ($propio) {
+            rs_flash('error', 'No puede eliminar su propia cuenta.');
+        } elseif ($vinculo || $reportes) {
+            rs_flash('error', 'No se puede eliminar porque este usuario tiene información relacionada (empleado o reportes). Puede inactivarlo.');
         } else {
             try {
                 rs_exec('DELETE FROM usuario WHERE id_usuario = ?', [$id]);
